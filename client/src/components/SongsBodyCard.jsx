@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import Link from '../components/Link';
 import Heart from '../components/Heart';
 import ArtworkPlay from '../components/ArtworkPlay';
+import ToolTip from 'react-portal-tooltip';
 import SongsBodyCardMobileEvents from '../components/SongsBodyCardMobileEvents';
 import { SONG_PATH, USER_PATH } from '../constants/RouterConstants';
 import IMAGE_SIZES from '../constants/ImageConstants';
 import getImageUrl from '../utils/ImageUtils';
 import formatSongTitle from '../utils/SongUtils';
+import Stats from '../components/Stats';
+
 
 const propTypes = {
   index: PropTypes.number.isRequired,
@@ -23,25 +26,64 @@ const propTypes = {
   toggleLike: PropTypes.func.isRequired,
 };
 
-const SongsBodyCard = ({
-  index,
-  isActive,
-  isAuthenticated,
-  isPlaying,
-  liked,
-  login,
-  navigateTo,
-  playlist,
-  playSong,
-  song,
-  toggleLike,
-}) => {
-  const { artworkUrl, id, title, user } = song;
-  const { avatarUrl, username } = user;
+class SongsBodyCard extends Component {
+  constructor() {
+    super();
+     this.onMouseIn = this.onMouseIn.bind(this);
+     this.onMouseOut = this.onMouseOut.bind(this);
+  }
+state = {
+  isTooltipActive:false,
+} 
+  componentDidMount() {
+   
+  }
 
-  return (
-    <div className={`songs-body-card ${isActive ? 'songs-body-card--active' : ''}`}>
-      <div className="songs-body-card__inner">
+  componentWillUnmount() {
+    
+  }
+  onMouseIn() {
+    this.setState({ isTooltipActive: true });
+  }
+
+  onMouseOut() {
+    this.setState({ isTooltipActive: false });
+  }
+
+render() {
+ 
+ const {
+   index,
+   isActive,
+   isAuthenticated,
+   isPlaying,
+   liked,
+   login,
+   navigateTo,
+   playlist,
+   playSong,
+   song,
+   toggleLike,
+    } = this.props;
+
+ const { artworkUrl, id, title, user, commentCount, favoritingsCount, playbackCount, description } = song;
+ const { avatarUrl, username } = user;
+
+let style = {
+  style: {
+    background: 'rgba(0,0,0,.8)',
+    padding: 10,
+    boxShadow: '2px 2px 0.5px rgba(0,0,0,.5)'
+  },
+  arrowStyle: {
+    color: 'rgba(0,0,0,.8)',
+    borderColor: false
+  }
+}
+ return (
+   <div className={`songs-body-card ${isActive ? 'songs-body-card--active' : ''}`} >
+      <div  className="songs-body-card__inner">
+
         <div
           className="songs-body-card__artwork"
           style={{
@@ -63,7 +105,34 @@ const SongsBodyCard = ({
               backgroundImage: `url(${getImageUrl(avatarUrl)})`,
             }}
           />
-          <div className="songs-body-card__details">
+
+          <div 
+            id ={"ID_"+`${id}`} 
+            className="songs-body-card__details" 
+            onMouseEnter={this.onMouseIn}
+            onMouseLeave={this.onMouseOut}
+          > 
+            <ToolTip 
+              active={this.state.isTooltipActive} 
+              position="right"
+              style={style}
+              parent={"#"+`${"ID_"+`${id}`}`}
+            >     
+              <div className="song-main__tooltip__description">
+                {description}
+              </div>
+              <Stats
+                className="song-main__stats"
+                commentCount={commentCount}
+                favoritingsCount={favoritingsCount}
+                id={id}
+                isAuthenticated={isAuthenticated}
+                liked={liked}
+                login={login}
+                playbackCount={playbackCount}
+                toggleLike={toggleLike}
+              />
+            </ToolTip>
             <Link
               className="songs-body-card__title"
               keys={{ id }}
@@ -101,6 +170,7 @@ const SongsBodyCard = ({
       />
     </div>
   );
+  }
 };
 
 SongsBodyCard.propTypes = propTypes;

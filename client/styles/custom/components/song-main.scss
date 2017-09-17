@@ -83,6 +83,23 @@
   overflow: hidden;
 }
 
+.song-main__tooltip__description {
+  max-height: 30em;
+  margin-top: 10px;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width:30em;
+  color:#fff;
+}
+
+.song-main__tooltip__popup__Style {
+    background: no-repeat center center;
+  background-size: cover;
+  padding: 10;
+  boxShadow: 2px 2px 0.5px rgba(0,0,0,.5);
+}
+
 .song-main__waveform {
   width: 200px;
   height: 100%;
